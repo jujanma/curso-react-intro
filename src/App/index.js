@@ -5,6 +5,9 @@ import { TodoItem } from "../TodoItem";
 import { CreateTodoButton } from "../CreateTodoButton";
 import { useState } from "react";
 import { useLocalStorage } from "./useLocaleStorage";
+import { TodosLoading } from "../TodosLoading";
+import { TodosError } from "../TodosError";
+import { EmptyTodos } from "../EmptyTodos";
 
 // const defaultTodos = [
 //   { text: "Cortar cebolla", completed: true },
@@ -16,7 +19,12 @@ import { useLocalStorage } from "./useLocaleStorage";
 
 function App() {
   const [searchValue, setSearchValue] = useState("");
-  const [todos, saveTodos] = useLocalStorage("TODOS_V1", []);
+  const {
+    item: todos,
+    saveItem: saveTodos,
+    loading,
+    error,
+  } = useLocalStorage("TODOS_V1", []);
 
   const completedTodos = todos.filter((todo) => !!todo.completed).length;
   const totalTodos = todos.length;
@@ -44,21 +52,32 @@ function App() {
 
   return (
     <>
-      <TodoCounter completed={completedTodos} total={totalTodos} />
-      <TodoSearch searchValue={searchValue} setSearchValue={setSearchValue} />
-      <TodoList>
-        {searchedTodos.map((todo) => (
-          <TodoItem
-            key={todo.text}
-            text={todo.text}
-            completed={todo.completed}
-            onComplete={() => completeTodo(todo.text)}
-            onDelete={() => deleteTodo(todo.text)}
+      {loading ? (
+        <TodosLoading />
+      ) : (
+        <>
+          <TodoCounter completed={completedTodos} total={totalTodos} />
+          <TodoSearch
+            searchValue={searchValue}
+            setSearchValue={setSearchValue}
           />
-        ))}
-      </TodoList>
+          <TodoList>
+            {error && <TodosError />}
+            {!loading && searchedTodos.length === 0 && <EmptyTodos />}
+            {searchedTodos.map((todo) => (
+              <TodoItem
+                key={todo.text}
+                text={todo.text}
+                completed={todo.completed}
+                onComplete={() => completeTodo(todo.text)}
+                onDelete={() => deleteTodo(todo.text)}
+              />
+            ))}
+          </TodoList>
 
-      <CreateTodoButton />
+          <CreateTodoButton />
+        </>
+      )}
     </>
   );
 }
