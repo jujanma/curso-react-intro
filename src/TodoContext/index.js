@@ -5,6 +5,7 @@ const TodoContext = React.createContext();
 
 const TodoProvider = ({ children }) => {
   const [searchValue, setSearchValue] = useState("");
+  const [openModal, setOpenModal] = useState(false);
   const {
     item: todos,
     saveItem: saveTodos,
@@ -17,6 +18,15 @@ const TodoProvider = ({ children }) => {
   const searchedTodos = todos.filter((todo) => {
     return todo.text.toLowerCase().includes(searchValue.toLowerCase());
   });
+
+  const addTodo = (text) => {
+    const newTodos = [...todos];
+    newTodos.push({
+      text,
+      completed: false,
+    });
+    saveTodos(newTodos);
+  };
 
   const completeTodo = (text) => {
     const newTodos = [...todos];
@@ -39,6 +49,7 @@ const TodoProvider = ({ children }) => {
   return (
     <TodoContext.Provider
       value={{
+        addTodo,
         loading,
         error,
         totalTodos,
@@ -48,6 +59,8 @@ const TodoProvider = ({ children }) => {
         deleteTodo,
         setSearchValue,
         searchValue,
+        openModal,
+        setOpenModal,
       }}
     >
       {children}

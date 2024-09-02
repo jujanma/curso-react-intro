@@ -1,12 +1,11 @@
 import "./CreateTodoButton.css";
 //Componente para un boton de crear TodoItem
-const CreateTodoButton = () => {
+const CreateTodoButton = ({ setOpenModal, openModal }) => {
   return (
     <button
       className="createTodoButton"
       onClick={(event) => {
-        console.log("Le diste click al boton");
-        console.log(event);
+        setOpenModal(!openModal);
       }}
     >
       Add
